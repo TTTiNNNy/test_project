@@ -20,7 +20,6 @@ class ServerRequest {
     var res = await dio.post(
         "https://trello.backend.tests.nekidaem.ru/api/v1/users/login/",
         data: {"username": _name, "password": _password});
-    print("in data obtainToken = ${res}");
 
     _token = res.data["token"];
   }
@@ -33,7 +32,6 @@ class ServerRequest {
         data: {
           "token": _token,
         });
-    print("in data refreshToken = ${res}");
 
     _token = res.data["token"];
   }
@@ -47,27 +45,22 @@ class ServerRequest {
     var dio = Dio();
     try {
       await refreshToken();
-      print("after refresh");
     } catch (err) {
       {
         try {
           await obtainToken();
         } on DioError catch (err) {
-          print("глубокая жопа");
           return err.response!.statusCode!;
         }
       }
     } finally {
       try {
-        print("in try");
         var res = await dio.get(
             "https://trello.backend.tests.nekidaem.ru/api/v1/cards/",
             options: Options(headers: {"Authorization": "JWT ${_token}"}));
-        print("in data = ${res}");
         cards = res.data;
         return -1;
       } on DioError catch (onError) {
-        print("err bufUserData ${onError} ");
 
         return onError.response!.statusCode!;
       }
